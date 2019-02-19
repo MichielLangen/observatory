@@ -97,7 +97,7 @@ class TrackingSession:
         self.version = version
         self.experiment = experiment
         self.run_id = run_id
-        self._state = None
+        self._state = LocalState()
     
     def change(self, state):
         self._state.switch(state)
