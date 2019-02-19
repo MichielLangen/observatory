@@ -94,12 +94,11 @@ class TrackingSession:
         state : object
             Instance of the current state
         """
-
-        self._state = state
         self.name = name
         self.version = version
         self.experiment = experiment
         self.run_id = run_id
+        self._state = state
 
     def record_metric(self, name, value):
         """
@@ -192,6 +191,10 @@ class TrackingSession:
         self._verify_response(response, 201)
 
     def __enter__(self):
+        print('name: ' + self.name)
+        print('version: ' + self.version)
+        print('experiment: ' + self.experiment)
+        print('run_id: ' + self.run_id)
         response = self._state.record_session_start(
             self.name, self.version, self.experiment, self.run_id)
 
@@ -297,7 +300,25 @@ class LocalState(ObservatoryState):
         print("LocalState : record_output")
 
     def record_session_start(self, model, version, experiment, run_id):
+        """
+        Records the start of a session.
+
+        This method sends a HTTP request with the right payload to the observatory tracking endpoint.
+        The result is a 201 when the server succesfully recorded the session completion. Otherwise
+        the server will return a 500 response.
+
+        Parameters:
+        -----------
+        model : str
+            The name of the model
+        version : int
+            The version of the model
+        experiment : str
+            The name of the experiment
+        run_id : str
+            The identifier for the run
         print("LocalState : record_session_start")
+        """
 
     def record_session_end(self, model, version, experiment, run_id, status):
         print("LocalState : record_session_end")
