@@ -2,7 +2,7 @@ import json
 import os
 from tempfile import mkstemp
 
-from observatory.trackingstatepattern import TrackingSession, start_run
+from observatory.trackingstatepattern import TrackingSession, start_run, LocalState, RemoteState
 from observatory.constants import LABEL_PATTERN
 from hypothesis import example, given, strategies, assume
 import requests
