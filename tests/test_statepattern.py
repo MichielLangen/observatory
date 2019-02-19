@@ -23,10 +23,8 @@ def test_record_metrics_local(metric_name, metric_value):
     assume(metric_name != None)
 
     with TrackingSession('test', 1, 'test', 'test') as session:
-        session.change(LocalState())
+        session.change(LocalState)
         session.record_metric(metric_name, metric_value)
-
-    session.record_metric.assert_called()
 
 @given(
     metric_name=strategies.from_regex(LABEL_PATTERN),
@@ -41,7 +39,5 @@ def test_record_metrics_remote(metric_name, metric_value):
     assume(metric_name != None)
 
     with TrackingSession('test', 1, 'test', 'test') as session:
-        session.change(RemoteState())
+        session.change(RemoteState)
         session.record_metric(metric_name, metric_value)
-
-    session.record_metric.assert_called()

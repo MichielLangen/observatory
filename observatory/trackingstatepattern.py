@@ -132,8 +132,6 @@ class TrackingSession:
         response = self._state.record_metric(
             self.name, self.version, self.experiment, self.run_id, name, value)
 
-        self._verify_response(response, 201)
-
     def record_settings(self, **settings):
         """
         Records settings used for the run
@@ -155,8 +153,6 @@ class TrackingSession:
         response = self._state.record_settings(
             self.name, self.version, self.experiment,
             self.run_id, dict(settings))
-
-        self._verify_response(response, 201)
 
     def record_output(self, input_file, filename):
         """
@@ -190,13 +186,9 @@ class TrackingSession:
             self.name, self.version, self.experiment,
             self.run_id, filename, open(absolute_file_path))
 
-        self._verify_response(response, 201)
-
     def __enter__(self):
         response = self._state.record_session_start(
             self.name, self.version, self.experiment, self.run_id)
-
-        self._verify_response(response, 201)
 
         return self
 
@@ -210,40 +202,8 @@ class TrackingSession:
             self.name, self.version, self.experiment,
             self.run_id, session_status)
 
-        self._verify_response(response, 201)
 
         return exc_type is None
-
-    def _verify_response(self, response, expected_status, expected_type='application/json'):
-        """
-        Verifies the response received from the tracking client against the expected status code.
-        Also verifies that the method contains valid data according to the expected content_type.
-
-        Use this method whenever your receive data from the server, to make sure that the contents
-        are readable as expected.
-        """
-        actual_status = response.status_code
-        actual_type = response.headers['Content-Type']
-
-        if response.status_code != expected_status:
-            try:
-                response_content = response.json()
-                error_message = response_content['message']
-
-                raise RuntimeError('Failed to execute operation. Server returned ' +
-                                   f'an error with status {actual_status}: {error_message}')
-            except:
-                # In some weird cases the server returns an error nobody will ever understand.
-                # This catch-all fixes the problem and returns a somewhat useful error message.
-                raise RuntimeError('Failed to execute operation. Server returned ' +
-                                   f'an error with status: {actual_status}')
-
-        # Sometimes the server does respond, but sends some weird piece of data that we can't parse.
-        # This check makes sure that we don't try to ever read it.
-        if actual_type != expected_type:
-            raise RuntimeError(f'Failed to execute operation. ' +
-                               'Received invalid response type: {actual_type}')
-
 
 class ObservatoryState(ABC):
     def __init__(self):
@@ -303,25 +263,7 @@ class LocalState(ObservatoryState):
         print("LocalState : record_output")
 
     def record_session_start(self, model, version, experiment, run_id):
-        """
-        Records the start of a session.
-
-        This method sends a HTTP request with the right payload to the observatory tracking endpoint.
-        The result is a 201 when the server succesfully recorded the session completion. Otherwise
-        the server will return a 500 response.
-
-        Parameters:
-        -----------
-        model : str
-            The name of the model
-        version : int
-            The version of the model
-        experiment : str
-            The name of the experiment
-        run_id : str
-            The identifier for the run
         print("LocalState : record_session_start")
-        """
 
     def record_session_end(self, model, version, experiment, run_id, status):
         print("LocalState : record_session_end")
@@ -329,6 +271,36 @@ class LocalState(ObservatoryState):
 
 class RemoteState(ObservatoryState):
     #Handels metrics for the remote endpoint
+
+    def _verify_response(self, response, expected_status, expected_type='application/json'):
+        """
+        Verifies the response received from the tracking client against the expected status code.
+        Also verifies that the method contains valid data according to the expected content_type.
+
+        Use this method whenever your receive data from the server, to make sure that the contents
+        are readable as expected.
+        """
+        actual_status = response.status_code
+        actual_type = response.headers['Content-Type']
+
+        if response.status_code != expected_status:
+            try:
+                response_content = response.json()
+                error_message = response_content['message']
+
+                raise RuntimeError('Failed to execute operation. Server returned ' +
+                                   f'an error with status {actual_status}: {error_message}')
+            except:
+                # In some weird cases the server returns an error nobody will ever understand.
+                # This catch-all fixes the problem and returns a somewhat useful error message.
+                raise RuntimeError('Failed to execute operation. Server returned ' +
+                                   f'an error with status: {actual_status}')
+
+        # Sometimes the server does respond, but sends some weird piece of data that we can't parse.
+        # This check makes sure that we don't try to ever read it.
+        if actual_type != expected_type:
+            raise RuntimeError(f'Failed to execute operation. ' +
+                               'Received invalid response type: {actual_type}')
 
     def record_metric(self, model, version, experiment, run_id, name, value):
         """
@@ -359,7 +331,7 @@ class RemoteState(ObservatoryState):
             The response from the server
         """
         handler_url = f'{settings.server_url}/api/models/{model}/versions/{version}/experiments/{experiment}/runs/{run_id}/metrics'
-        return requests.post(handler_url, json={'name': metric_name, 'value': metric_value})
+        self._verify_response(requests.post(handler_url, json={'name': metric_name, 'value': metric_value}), 201)
 
     def record_settings():
         print("RemoteState : record_settings")
@@ -389,7 +361,8 @@ class RemoteState(ObservatoryState):
             The response from the server
         """
         handler_url = f'{settings.server_url}/api/models/{model}/versions/{version}/experiments/{experiment}/runs/{run_id}/settings'
-        return requests.post(handler_url, json=settings)
+        self._verify_response(requests.post(handler_url, json=settings), 201)
+        
 
 
     def record_output():
@@ -427,7 +400,7 @@ class RemoteState(ObservatoryState):
             'file': (filename, file, 'application/octet-stream')
         }
 
-        return requests.put(handler_url, files=file_collection)
+        self._verify_response(requests.put(handler_url, files=file_collection), 201)
 
     def record_session_start(self, model, version, experiment, run_id):
         """
@@ -454,7 +427,7 @@ class RemoteState(ObservatoryState):
             The response from the server
         """
         handler_url = f'{settings.server_url}/api/models/{model}/versions/{version}/experiments/{experiment}/runs'
-        return requests.post(handler_url, json={'run_id': run_id})
+        self._verify_response(requests.post(handler_url, json={'run_id': run_id}), 201)
 
     def record_session_end(self, model, version, experiment, run_id, status):
         """
@@ -483,5 +456,5 @@ class RemoteState(ObservatoryState):
             The response from the server
         """
         handler_url = f'{settings.server_url}/api/models/{model}/versions/{version}/experiments/{experiment}/runs/{run_id}'
-        return requests.put(handler_url, json={'status': status})
+        self._verify_response(requests.put(handler_url, json={'status': status}), 201)
         
