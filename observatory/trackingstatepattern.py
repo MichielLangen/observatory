@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod,
 import json
 import re
 import warnings
@@ -247,35 +247,35 @@ class ObservatoryState(ABC):
     def __init__(self):
         self.n = None
 
-    @abc.abstractmethod
+    @abstractmethod
     def record_metric(self, name, value):
         """
         This method will record a metric.
         """
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def record_settings():
         """
         This method will record a setting.
         """
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def record_output():
         """
         This method will record a output.
         """
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def record_session_start(self, model, version, experiment, run_id):
         """
         This method will record the start of a run.
         """
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def record_session_end(self, model, version, experiment, run_id, status):
         """
         This method will record the end of a run.
