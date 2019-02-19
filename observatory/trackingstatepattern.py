@@ -191,6 +191,7 @@ class TrackingSession:
         self._verify_response(response, 201)
 
     def __enter__(self):
+        print self.__class__.__name__
         print('name: ' + self.name)
         print('version: ' + str(self.version))
         print('experiment: ' + self.experiment)
