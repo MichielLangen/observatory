@@ -7,8 +7,7 @@ env:
   - CC_TEST_REPORTER_ID=bfe695a3efcfa8bb6d797c8c9d933ab3d07f50c30d6f0c477133c60b505c6370
 install: pip install tox-travis
 before_script:
-- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
-  > ./cc-test-reporter
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 >./cc-test-reporter
 - chmod +x ./cc-test-reporter
 - "./cc-test-reporter before-build"
 script: tox
