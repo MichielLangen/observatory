@@ -32,7 +32,7 @@ def test_record_metrics_local(metric_name, metric_value):
     metric_value=strategies.floats(min_value=0.0, max_value=10.000)
 )
 def test_record_metrics_remote(metric_name, metric_value):
-     """
+    """
     You can record metrics during your run.
     The number of times doesn't matter, we record all of them.
     """
