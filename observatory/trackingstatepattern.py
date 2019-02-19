@@ -5,12 +5,13 @@ import warnings
 from os import path
 from time import time
 from uuid import uuid4
+import inspect
 
 import requests
 from observatory import settings
 from observatory.constants import LABEL_PATTERN
 
-def start_run(model, version, mode, experiment='default'):
+def start_run(model, version, state, experiment='default'):
     """
     Starts a new run for a specific model version.
 
@@ -58,25 +59,23 @@ def start_run(model, version, mode, experiment='default'):
 
     if version <= 0:
         raise AssertionError('version must be greater than zero')
-
-    if mode == "local":
-        state = LocalState()
-    elif mode == "remote":
-        state = RemoteState()
-    else:
-        raise AssertionError('Given mode is not valid, it must me "local" or "remote".')
+    
+    if state != isinstance(state, (LocalState, RemoteState)):
+        raise AssertionError('State must be either a LocalState() or RemoteState()')
 
     run_id = str(uuid4())
-    #tracking_client = TrackingClient(settings.server_url)
 
-    #return TrackingSession(model, version, experiment, run_id, tracking_client)
-    return TrackingSession(model, version, experiment, run_id, state)
+    trackingSession = TrackingSession(model, version, experiment, run_id)
+
+    trackingSession.change(state)
+    
+    return trackingSession
 
 
 class TrackingSession:
     #trackingsession
 
-    def __init__(self, name, version, experiment, run_id, observatorystate):
+    def __init__(self, name, version, experiment, run_id):
         """
         Initializes the tracking session with the necessary tracking information
         and a pre-initialized tracking client for recording the actual metrics.
@@ -98,7 +97,9 @@ class TrackingSession:
         self.version = version
         self.experiment = experiment
         self.run_id = run_id
-        self._state = observatorystate
+    
+    def change(self, state):
+        self._state.switch(state)
 
     def record_metric(self, name, value):
         """
@@ -246,6 +247,9 @@ class TrackingSession:
 class ObservatoryState(ABC):
     def __init__(self):
         self.n = None
+
+    def switch(self, state):
+        self.__class__ = state
 
     @abstractmethod
     def record_metric(self, name, value):
