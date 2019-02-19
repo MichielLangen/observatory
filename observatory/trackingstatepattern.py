@@ -11,67 +11,6 @@ import requests
 from observatory import settings
 from observatory.constants import LABEL_PATTERN
 
-def start_run(model, version, state, experiment='default'):
-    """
-    Starts a new run for a specific model version.
-
-    You can use this function start start recording data related to a single experiment run.
-    The use of experiments is optional, you can leave this parameter out. See the example below for basic usage.
-
-    >>> with observatory.start_run('my_model', 1, remote, experiment='my_experiment') as run:
-    >>>     # Record metrics, outputs and settings
-
-    A new run is created on the server at the start of the scope.
-    It is automatically finalized at the end of the scope.
-
-    Note that when an exception occurs within the scope of a run,
-    the run is automatically marked as failed.
-
-    Each time you invoke `start_run()` a new run is created with a newly generated UUID.
-    This ensures that no runs overlap eachother.
-
-    **Please note** it is not possible to resume a run that you started earlier.
-
-    Parameters
-    ----------
-    model : string
-        The name of the model
-    version : int
-        The version number of the model
-    experiment : string, optional
-        The experiment you're working on
-    """
-
-    if model is None or model.strip() == '':
-        raise AssertionError('Please provide a name for your model.')
-
-    if not re.match(LABEL_PATTERN, model):
-        raise AssertionError('name is invalid. It can contain ' +
-                             'lower-case alpha-numeric characters and dashes only.')
-
-    if experiment is None:
-        experiment = 'default'
-
-    if experiment != 'default':
-        if experiment.strip() == '' or not re.match(LABEL_PATTERN, experiment):
-            raise AssertionError('experiment is invalid. It can contain ' +
-                                 'lower-case alpha-numeric characters and dashes only.')
-
-    if version <= 0:
-        raise AssertionError('version must be greater than zero')
-    
-    if state != isinstance(state, (LocalState, RemoteState)):
-        raise AssertionError('State must be either a LocalState() or RemoteState()')
-
-    run_id = str(uuid4())
-
-    trackingSession = TrackingSession(model, version, experiment, run_id)
-
-    trackingSession.change(state)
-    
-    return trackingSession
-
-
 class TrackingSession:
     #trackingsession
 
@@ -256,10 +195,10 @@ class LocalState(ObservatoryState):
         #this is because the sever is also going to use sink.py to save data
         print("LocalState : record_metric")
 
-    def record_settings():
+    def record_settings(self, model, version, experiment, run_id, settings):
         print("LocalState : record_settings")
 
-    def record_output():
+    def record_output(self, model, version, experiment, run_id, filename, file):
         print("LocalState : record_output")
 
     def record_session_start(self, model, version, experiment, run_id):
@@ -457,4 +396,65 @@ class RemoteState(ObservatoryState):
         """
         handler_url = f'{settings.server_url}/api/models/{model}/versions/{version}/experiments/{experiment}/runs/{run_id}'
         self._verify_response(requests.put(handler_url, json={'status': status}), 201)
+
+def start_run(model, version, state=LocalState(), experiment='default'):
+    """
+    Starts a new run for a specific model version.
+
+    You can use this function start start recording data related to a single experiment run.
+    The use of experiments is optional, you can leave this parameter out. See the example below for basic usage.
+
+    >>> with observatory.start_run('my_model', 1, remote, experiment='my_experiment') as run:
+    >>>     # Record metrics, outputs and settings
+
+    A new run is created on the server at the start of the scope.
+    It is automatically finalized at the end of the scope.
+
+    Note that when an exception occurs within the scope of a run,
+    the run is automatically marked as failed.
+
+    Each time you invoke `start_run()` a new run is created with a newly generated UUID.
+    This ensures that no runs overlap eachother.
+
+    **Please note** it is not possible to resume a run that you started earlier.
+
+    Parameters
+    ----------
+    model : string
+        The name of the model
+    version : int
+        The version number of the model
+    experiment : string, optional
+        The experiment you're working on
+    """
+
+    if model is None or model.strip() == '':
+        raise AssertionError('Please provide a name for your model.')
+
+    if not re.match(LABEL_PATTERN, model):
+        raise AssertionError('name is invalid. It can contain ' +
+                             'lower-case alpha-numeric characters and dashes only.')
+
+    if experiment is None:
+        experiment = 'default'
+
+    if experiment != 'default':
+        if experiment.strip() == '' or not re.match(LABEL_PATTERN, experiment):
+            raise AssertionError('experiment is invalid. It can contain ' +
+                                 'lower-case alpha-numeric characters and dashes only.')
+
+    if version <= 0:
+        raise AssertionError('version must be greater than zero')
+    
+    if state != isinstance(state, (LocalState, RemoteState)):
+        raise AssertionError('State must be either a LocalState() or RemoteState()')
+
+    run_id = str(uuid4())
+
+    trackingSession = TrackingSession(model, version, experiment, run_id)
+
+    trackingSession.change(state)
+    
+    return trackingSession
+
         
