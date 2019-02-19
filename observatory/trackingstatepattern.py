@@ -29,8 +29,6 @@ class TrackingSession:
             Name of the experiment
         run_id : string
             ID of the run
-        state : object
-            Instance of the current state
         """
         self.name = name
         self.version = version
@@ -424,6 +422,8 @@ def start_run(model, version, state=LocalState(), experiment='default'):
         The name of the model
     version : int
         The version number of the model
+    state : object, optinal
+        The state you're working in
     experiment : string, optional
         The experiment you're working on
     """
