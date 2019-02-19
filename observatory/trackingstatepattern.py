@@ -192,7 +192,7 @@ class TrackingSession:
 
     def __enter__(self):
         print('name: ' + self.name)
-        print('version: ' + self.version)
+        print('version: ' + str(self.version))
         print('experiment: ' + self.experiment)
         print('run_id: ' + self.run_id)
         response = self._state.record_session_start(
