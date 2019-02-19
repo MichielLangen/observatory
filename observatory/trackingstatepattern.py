@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod,
+from abc import ABC, abstractmethod
 import json
 import re
 import warnings
