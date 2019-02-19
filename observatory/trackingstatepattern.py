@@ -59,13 +59,18 @@ def start_run(model, version, mode, experiment='default'):
     if version <= 0:
         raise AssertionError('version must be greater than zero')
 
-    
+    if mode == "local":
+        state = LocalState()
+    elif mode == "remote":
+        state = RemoteState()
+    else:
+        raise AssertionError('Given mode is not valid, it must me "local" or "remote".')
 
     run_id = str(uuid4())
     #tracking_client = TrackingClient(settings.server_url)
 
     #return TrackingSession(model, version, experiment, run_id, tracking_client)
-    return TrackingSession(model, version, experiment, run_id, mode)
+    return TrackingSession(model, version, experiment, run_id, state)
 
 
 class TrackingSession:
@@ -93,12 +98,6 @@ class TrackingSession:
         self.version = version
         self.experiment = experiment
         self.run_id = run_id
-        if observatorystate == "local":
-            state = LocalState()
-        elif observatorystate == "remote":
-            state = RemoteState()
-        else:
-            raise AssertionError('Given mode is not valid, it must me "local" or "remote".')
         self._state = observatorystate
 
     def record_metric(self, name, value):
@@ -192,11 +191,6 @@ class TrackingSession:
         self._verify_response(response, 201)
 
     def __enter__(self):
-        print(self._state.__class__.__name__)
-        print('name: ' + self.name)
-        print('version: ' + str(self.version))
-        print('experiment: ' + self.experiment)
-        print('run_id: ' + self.run_id)
         response = self._state.record_session_start(
             self.name, self.version, self.experiment, self.run_id)
 
