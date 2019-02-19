@@ -22,7 +22,7 @@ def test_record_metrics_local(metric_name, metric_value):
     assume(metric_name.strip() != '')
     assume(metric_name != None)
 
-    with TrackingSession('test', 1, 'test', 'test', 'local') as session:
+    with TrackingSession('test', 1, 'test', 'test', LocalState()) as session:
         session.record_metric(metric_name, metric_value)
 
     session.record_metric.assert_called()
@@ -39,7 +39,7 @@ def test_record_metrics_remote(metric_name, metric_value):
     assume(metric_name.strip() != '')
     assume(metric_name != None)
 
-    with TrackingSession('test', 1, 'test', 'test', 'remote') as session:
+    with TrackingSession('test', 1, 'test', 'test', RemoteState()) as session:
         session.record_metric(metric_name, metric_value)
 
     session.record_metric.assert_called()
