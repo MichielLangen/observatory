@@ -56,7 +56,7 @@ def run_output():
 @pytest.mark.parametrize('model', INVALID_LABELS)
 def test_start_run_with_invalid_model(model):
     """
-    You cannot start a run without a valid model.
+    You cannot start a run with an invalid model.
     """
     with pytest.raises(AssertionError):
         try:
