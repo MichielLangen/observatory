@@ -268,14 +268,14 @@ class ObservatoryState(abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def record_session_start():
+    def record_session_start(self, model, version, experiment, run_id):
         """
         This method will record the start of a run.
         """
         pass
 
     @abc.abstractmethod
-    def record_session_end():
+    def record_session_end(self, model, version, experiment, run_id, status):
         """
         This method will record the end of a run.
         """
@@ -296,10 +296,10 @@ class LocalState(ObservatoryState):
     def record_output():
         print("LocalState : record_output")
 
-    def record_session_start():
+    def record_session_start(self, model, version, experiment, run_id):
         print("LocalState : record_session_start")
 
-    def record_session_end():
+    def record_session_end(self, model, version, experiment, run_id, status):
         print("LocalState : record_session_end")
 
 
