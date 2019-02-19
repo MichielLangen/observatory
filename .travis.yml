@@ -1,16 +1,20 @@
 sudo: false
 language: python
 python:
-  - "3.6"
+- '3.6'
 env:
   global:
-    - CC_TEST_REPORTER_ID=bfe695a3efcfa8bb6d797c8c9d933ab3d07f50c30d6f0c477133c60b505c6370
+  - CC_TEST_REPORTER_ID=bfe695a3efcfa8bb6d797c8c9d933ab3d07f50c30d6f0c477133c60b505c6370
 install: pip install tox-travis
 before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+  > ./cc-test-reporter
+- chmod +x ./cc-test-reporter
+- "./cc-test-reporter before-build"
 script: tox
 after_script:
-  - cd observatory && ../cc-test-reporter format-coverage --input-type coverage.py ../coverage.xml
-  - ../cc-test-reporter upload-coverage -i coverage/codeclimate.json
+- cd observatory && ../cc-test-reporter format-coverage --input-type coverage.py ../coverage.xml
+- "../cc-test-reporter upload-coverage -i coverage/codeclimate.json"
+notifications:
+  slack:
+    secure: JIMcV569axb2QHtY25wyzn3nzZ+1l0ngqlzDyVOdnSxYkke3zlPr4+591i0XtkJoQky/VoJCaENd3kJH2AABaY8LkU0QN2qx1WvK/c/x4m3YabA0pbQouRz5g6tmwKcLpMdkpTzoZAH/Ju754Kc3z5iDSnB/9Ld1DAvP20QDc3jxeyTWoNN688xKIBqYD/hv3mMloV2owDjpWO5R5iUOLT5uZenGTJXIlXu3lhWXm41BXPI9cAnGhlEVGubBs41z2HgDybwIaVXu/jauNU9wmUCXk+7Jw21iaZPuINo8+7CiIpw16WVcLBgCaX6rO163K1h1skU+1SB2DjuR0x7ZAa/r9L7L8nmN6kFKbj52XyvDPJwLksbJxbXEZ89TR2Jtpw/a5L0CDYoVGSaB/iSdyBPbzeksdp7J+8NikwHW+RlIDevysimtdJwINtjxwCLyAk6goNjhdpWQXcN2BTPjl6H2/6Q8PveDriuWW31be/JvX0CoaoUJ97Z7/2h26UdOUc7Q3C3BWx0zKlZNDWLVg15VUoejOG80lqgGIbP2eqkDEhaq2WPU6JACCh/Ses0U5aV9Jy2hS33/D6pkPegxeX2sni/svndHob7bEcq72SkMgfkkMJB6DYna5jfjD85hqdJ6QQK7gBCgkWJKRVpXi/DZVVnAnY1SU8x60P6YeWg=
