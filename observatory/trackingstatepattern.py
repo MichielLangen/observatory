@@ -1,4 +1,4 @@
-import abc
+from abc import ABC, abstractmethod
 import json
 import re
 import warnings
@@ -243,7 +243,9 @@ class TrackingSession:
                                'Received invalid response type: {actual_type}')
 
 
-class ObservatoryState(abc.ABCMeta):
+class ObservatoryState(ABC):
+    def __init__(self):
+        self.n = None
 
     @abc.abstractmethod
     def record_metric(self, name, value):
