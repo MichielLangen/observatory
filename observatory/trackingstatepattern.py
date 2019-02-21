@@ -8,7 +8,7 @@ from uuid import uuid4
 import inspect
 
 import requests
-from observatory import settings
+from observatory import settings, benchmark_local_saving
 from observatory.constants import LABEL_PATTERN
 
 class TrackingSession:
@@ -66,7 +66,7 @@ class TrackingSession:
             raise AssertionError(
                 'Please provide a valid value for the metric.')
 
-        response = self._state.record_metric(
+        self._state.record_metric(
             self.name, self.version, self.experiment, self.run_id, name, value)
 
     def record_settings(self, **settings):
@@ -87,7 +87,7 @@ class TrackingSession:
                 'the empty settings collection is discarded.', 
                 RuntimeWarning)
 
-        response = self._state.record_settings(
+        self._state.record_settings(
             self.name, self.version, self.experiment,
             self.run_id, dict(settings))
 
@@ -119,12 +119,12 @@ class TrackingSession:
                 'to upload as output of this run. Please make ' +
                 'sure that the file exists on disk.')
 
-        response = self._state.record_output(
+        self._state.record_output(
             self.name, self.version, self.experiment,
             self.run_id, filename, open(absolute_file_path))
 
     def __enter__(self):
-        response = self._state.record_session_start(
+        self._state.record_session_start(
             self.name, self.version, self.experiment, self.run_id)
 
         return self
@@ -135,7 +135,7 @@ class TrackingSession:
         else:
             session_status = 'FAILED'
 
-        response = self._state.record_session_end(
+        self._state.record_session_end(
             self.name, self.version, self.experiment,
             self.run_id, session_status)
 
@@ -157,14 +157,14 @@ class ObservatoryState(ABC):
         pass
 
     @abstractmethod
-    def record_settings():
+    def record_settings(self, name, value):
         """
         This method will record a setting.
         """
         pass
 
     @abstractmethod
-    def record_output():
+    def record_output(self, name, value):
         """
         This method will record a output.
         """
@@ -185,13 +185,14 @@ class ObservatoryState(ABC):
         pass
 
 class LocalState(ObservatoryState):
-    #Handels metrics for the local filesystem -> Sind.py
+    #Handels metrics for the local filesystem -> Sink.py
 
     def record_metric(self, model, version, experiment, run_id, name, value):
         #sink.save_metric(model, version, experiment, run_id, name, value)
         #localstate is nothing more than a nice data handler that passes is to sink.py
         #this is because the sever is also going to use sink.py to save data
         print("LocalState : record_metric")
+        benchmark_local_saving.benchmark_text_record_metric(self, model, version, experiment, run_id, name, value)
 
     def record_settings(self, model, version, experiment, run_id, settings):
         print("LocalState : record_settings")
@@ -268,9 +269,9 @@ class RemoteState(ObservatoryState):
             The response from the server
         """
         handler_url = f'{settings.server_url}/api/models/{model}/versions/{version}/experiments/{experiment}/runs/{run_id}/metrics'
-        self._verify_response(requests.post(handler_url, json={'name': metric_name, 'value': metric_value}), 201)
+        self._verify_response(requests.post(handler_url, json={'name': name, 'value': value}), 201)
 
-    def record_settings():
+    def record_settings(self, model, version, experiment, run_id, name, value):
         print("RemoteState : record_settings")
         """
         Records the settings of an experiment run.
@@ -302,7 +303,7 @@ class RemoteState(ObservatoryState):
         
 
 
-    def record_output():
+    def record_output(self, model, version, experiment, run_id, filename, value):
         print("RemoteState : record_output")
         """
         Records an output of an experiment run
@@ -329,7 +330,7 @@ class RemoteState(ObservatoryState):
         Returns:
         --------
         requests.Response
-            The response from the server
+            The response from the servers
         """
         handler_url = f'{settings.server_url}/api/models/{model}/versions/{version}/experiments/{experiment}/runs/{run_id}/outputs/{filename}'
 
@@ -456,5 +457,3 @@ def start_run(model, version, state=LocalState(), experiment='default'):
     trackingSession.change(state)
     
     return trackingSession
-
-        
