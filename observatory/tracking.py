@@ -185,7 +185,9 @@ class ObservatoryState(ABC):
         pass
 
 class LocalState(ObservatoryState):
-    #Handels metrics for the local filesystem -> Sink.py
+"""
+This state is used to record metadata about experiments in the current working directory using the standard data sink. 
+"""
 
     def record_metric(self, model, version, experiment, run_id, name, value):
         #sink.save_metric(model, version, experiment, run_id, name, value)
