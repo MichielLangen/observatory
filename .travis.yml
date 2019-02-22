@@ -7,7 +7,8 @@ env:
   - CC_TEST_REPORTER_ID=bfe695a3efcfa8bb6d797c8c9d933ab3d07f50c30d6f0c477133c60b505c6370
 install: pip install tox-travis
 before_script:
-- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 >./cc-test-reporter
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+  >./cc-test-reporter
 - chmod +x ./cc-test-reporter
 - "./cc-test-reporter before-build"
 script: tox
@@ -16,4 +17,4 @@ after_script:
 - "../cc-test-reporter upload-coverage -i coverage/codeclimate.json"
 notifications:
   slack:
-    secure: JIMcV569axb2QHtY25wyzn3nzZ+1l0ngqlzDyVOdnSxYkke3zlPr4+591i0XtkJoQky/VoJCaENd3kJH2AABaY8LkU0QN2qx1WvK/c/x4m3YabA0pbQouRz5g6tmwKcLpMdkpTzoZAH/Ju754Kc3z5iDSnB/9Ld1DAvP20QDc3jxeyTWoNN688xKIBqYD/hv3mMloV2owDjpWO5R5iUOLT5uZenGTJXIlXu3lhWXm41BXPI9cAnGhlEVGubBs41z2HgDybwIaVXu/jauNU9wmUCXk+7Jw21iaZPuINo8+7CiIpw16WVcLBgCaX6rO163K1h1skU+1SB2DjuR0x7ZAa/r9L7L8nmN6kFKbj52XyvDPJwLksbJxbXEZ89TR2Jtpw/a5L0CDYoVGSaB/iSdyBPbzeksdp7J+8NikwHW+RlIDevysimtdJwINtjxwCLyAk6goNjhdpWQXcN2BTPjl6H2/6Q8PveDriuWW31be/JvX0CoaoUJ97Z7/2h26UdOUc7Q3C3BWx0zKlZNDWLVg15VUoejOG80lqgGIbP2eqkDEhaq2WPU6JACCh/Ses0U5aV9Jy2hS33/D6pkPegxeX2sni/svndHob7bEcq72SkMgfkkMJB6DYna5jfjD85hqdJ6QQK7gBCgkWJKRVpXi/DZVVnAnY1SU8x60P6YeWg=
+    secure: b1hrLLOYZMEU+3ja4eHPwfk+bTgBdLpuXUOQ9lmK91dEnyuN4j+YMDSn4pXHG1q7IqJEKCNN2nkrBnYat9vRtRV3dUeuIWEdW0wPCqBCgTU0lTZ7Y0Grh5wtXKO89PrjPqprFlR+LMc8ImuReNMENugc9LzKT07e6QI31D9jkyifDOjKp+grPj7Mot8eDCsr5f3P9capeM58tLh3DbMVhWf9OxO7kLeJtnTuWsolR5AgtBExJdkTM9/sfoSwOArSOu7etAJSJ7JMzFtuTkhBuXm5hWKnTPWoaAgrDbSeCn+A4LNGKZehxuBLdtx1Mw1fsksinuEP2UevnNpZc1+oPF4zBvZxekim56yjUHZmeL0QZbAAG8ZLCG6nd3MDMc7K1S3AHU6Svt9gmz0pXIuslxPbvef8qKC8QWRZeXGcWC3f/wNPBGvQMo5wtWojFEsd6q4g85FEtNnvmDiz26RtxoxVDAz73vccTzshXrYedr1Ky/zcTGEwOCWsgQxQGZmk8aEcS7Tkl2p0OGksmIJtkyw8VW4ihyfb/P/2yn4iZ7SaRIAiWTEMK3hTqToU0tzGDUCeaFD48kWst3r+X7p+WMTfu2m9CSm6OG+wWnzaj9CmRpugGoetuT4+T3vsZtM9ejlxL5uNnBjGRKsNAXn1pTpKK7GWLtAwXq8IWSoxwkU=
