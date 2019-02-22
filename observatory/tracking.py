@@ -176,7 +176,8 @@ It must not read the blob to validate it.
     @abstractmethod
     def record_session_start(self, model, version, experiment, run_id):
         """
-        This method will record the start of a run.
+Override this method in a derived class to record the start of a session.
+The derived class is required to set the status of the run to "In progress." with a unix timestamp.
         """
         pass
 
