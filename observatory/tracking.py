@@ -159,7 +159,8 @@ class ObservatoryState(ABC):
     @abstractmethod
     def record_settings(self, name, value):
         """
-        This method will record a setting.
+Override this method in a derived class to record a setting.
+The derived class is required to store the settings as a single dictionary per run.
         """
         pass
 
