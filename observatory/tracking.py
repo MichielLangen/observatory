@@ -190,9 +190,9 @@ The derived class must, in addition to the status, also record a unix timestamp.
         pass
 
 class LocalState(ObservatoryState):
-"""
-This state is used to record metadata about experiments in the current working directory using the standard data sink. 
-"""
+    """
+    This state is used to record metadata about experiments in the current working directory using the standard data sink. 
+    """
 
     def record_metric(self, model, version, experiment, run_id, name, value):
         #sink.save_metric(model, version, experiment, run_id, name, value)
@@ -214,9 +214,9 @@ This state is used to record metadata about experiments in the current working d
 
 
 class RemoteState(ObservatoryState):
-"""
-Records metric on a remote server that you can run through the command `observatory server`.
-"""
+    """
+    Records metric on a remote server that you can run through the command `observatory server`.
+    """
 
     def _verify_response(self, response, expected_status, expected_type='application/json'):
         """
