@@ -184,7 +184,8 @@ The derived class is required to set the status of the run to "In progress." wit
     @abstractmethod
     def record_session_end(self, model, version, experiment, run_id, status):
         """
-        This method will record the end of a run.
+Override this method in a derived class to record the end of a session.
+The derived class must, in addition to the status, also record a unix timestamp.
         """
         pass
 
