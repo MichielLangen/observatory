@@ -214,7 +214,9 @@ This state is used to record metadata about experiments in the current working d
 
 
 class RemoteState(ObservatoryState):
-    #Handels metrics for the remote endpoint
+"""
+Records metric on a remote server that you can run through the command `observatory server`.
+"""
 
     def _verify_response(self, response, expected_status, expected_type='application/json'):
         """
