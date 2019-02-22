@@ -167,7 +167,9 @@ The derived class is required to store the settings as a single dictionary per r
     @abstractmethod
     def record_output(self, name, value):
         """
-        This method will record a output.
+Override this method in a derived class to record an output for the run.
+The derived class is required to handle the value of the output as an opaque binary blob.
+It must not read the blob to validate it. 
         """
         pass
 
